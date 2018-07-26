@@ -10,22 +10,17 @@ Base.metadata.bind = engine
 
 app = Flask(__name__)
 
-DBSession = sessionmaker(bind=engine)
+DBSession = sessionmaker()
+DBSession.configure(bind=engine)
 session = DBSession()
-testCat = Category(name="Soccer")
-session.add(testCat)
-session.commit()
 
 @app.route('/')
-@app.route('/home')
 def testDb():
-    rows = session.query(Category)
-    str = ""
-    for row in rows:
-        print (row.name)
-        str += row.name + " "
-
-    return str
+    testCat = Category(name = "Soccer")
+    session.add(testCat)
+    session.commit()
+    rows = session.query(Category.name).count()
+    return str(rows)
 
 
 
