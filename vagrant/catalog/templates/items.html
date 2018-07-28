@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <style src="../static/css/reset.css"></style>
+    <style src="../static/css/catalog.css"></style>
+    <title></title>
+</head>
+<body>
+    <div class="left">
+        <h2 class="sub-heading">Categories</h2>
+        <ul>
+            {% for c in categories %}
+            <li>{{c.name}}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    <div class="right">
+        <h2 class="sub-heading">Items in this Category</h2>
+        <ul>
+            {% for i in items %}
+            <li>{{i.title}}</li>
+            {% endfor %}
+        </ul>
+    </div>
+</body>
+</html>
