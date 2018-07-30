@@ -12,6 +12,7 @@ class Category(Base):
     name = Column(String(50), nullable=False)
     id = Column(Integer, primary_key=True)
 
+
 class Item(Base):
     __tablename__ = 'item'
 
@@ -21,6 +22,16 @@ class Item(Base):
     cat_id = Column(Integer, ForeignKey(Category.id))
     category = relationship(Category)
 
+
+class User(Base):
+    __tablename__ = 'user'
+    id = Column(Integer, primary_key=True)
+    email = Column(String(100), unique=True, nullable=False)
+    name = Column(String(100), nullable=True)
+    avatar = Column(String(200))
+    active = Column(Boolean, default=False)
+    tokens = Column(Text)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow())
 
 
 engine = create_engine(
