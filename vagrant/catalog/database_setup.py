@@ -14,15 +14,6 @@ class Category(Base):
     id = Column(Integer, primary_key=True)
 
 
-class Item(Base):
-    __tablename__ = 'item'
-
-    title = Column(String(80), nullable=False)
-    desc = Column(String(500), nullable=False)
-    id = Column(Integer, primary_key=True)
-    cat_id = Column(Integer, ForeignKey(Category.id))
-    category = relationship(Category)
-
 
 class User(Base):
     __tablename__ = 'user'
@@ -35,6 +26,18 @@ class User(Base):
     created_at = Column(DateTime, default=datetime.datetime.utcnow())
 
 
+class Item(Base):
+    __tablename__ = 'item'
+
+    title = Column(String(80), nullable=False)
+    desc = Column(String(500), nullable=False)
+    id = Column(Integer, primary_key=True)
+    cat_id = Column(Integer, ForeignKey(Category.id))
+    category = relationship(Category)
+    user_id = Column(Integer, ForeignKey(User.id))
+    user = relationship(User)
+
+    
 engine = create_engine(
     'sqlite:///itemcatalog.db'
 )

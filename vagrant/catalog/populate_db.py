@@ -43,7 +43,7 @@ session.commit()
 
 desc_2 = '''Football boots, called cleats or soccer shoes in North America, are an item of footwear worn when playing football. Those designed for grass pitches have studs on the outsole to aid grip.'''
 
-item_2 = Item(title="Football Shoes/Cleats", desc=desc_2, cat_id=1)
+item_2 = Item(title="Cleats", desc=desc_2, cat_id=1)
 
 session.add(item_2)
 session.commit()
