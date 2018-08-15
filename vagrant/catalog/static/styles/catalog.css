@@ -1,34 +1,20 @@
-.l-inline-block {
-    display: inline-block;
-    vertical-align: top;
+.login-button {
+    font-size: 18px!important;
+    color: #fff!important;
+    padding: 15px 30px!important;
+    background-color: #4da6ff!important;
+    border: none!important;
+    border-radius: 3px!important; 
 }
 
-.l-list {
-    text-align: justify;
+a > span {
+    color: #bfbfbf;
 }
 
-.l-width-full {
-    width: 100%;
+a > span:hover {
+    text-decoration: none;
 }
 
-.l-width-half {
-    width: 50%;
+.row {
+    margin-top: 30px;
 }
-
-.left {
-    float: left;
-}
-
-.right {
-    float: right;
-}
-
-.sub-heading {
-    font-size: 30px;
-    color: #4b4b4b;
-}
-
-.mb-30 {
-    margin-bottom: 30px;
-}
-
