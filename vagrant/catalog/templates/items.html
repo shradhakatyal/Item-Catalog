@@ -1,29 +1,22 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <style src="../static/css/reset.css"></style>
-    <style src="../static/css/catalog.css"></style>
-    <title></title>
-</head>
-<body>
-    <div class="left">
-        <h2 class="sub-heading">Categories</h2>
-        <ul>
-            {% for c in categories %}
-            <li>{{c.name}}</li>
-            {% endfor %}
-        </ul>
-    </div>
-    <div class="right">
-        <h2 class="sub-heading">Items in this Category</h2>
-        <ul>
-            {% for i in items %}
-            <li>{{i.title}}</li>
-            {% endfor %}
-        </ul>
-    </div>
-</body>
-</html>
+{% extends "header.html" %}
+
+{% block title %}{{items[0].category.name}}{% endblock title %}
+
+{% block pagecontent %}
+<div class="left">
+    <h2 class="sub-heading">Categories</h2>
+    <ul>
+        {% for c in categories %}
+        <li><a href="{{url_for('getItemsFromCategory', cat_name=c.name)}}">{{c.name}}</a></li>
+        {% endfor %}
+    </ul>
+</div>
+<div class="right">
+    <h2 class="sub-heading">Items in {{items[0].category.name}}</h2>
+    <ul>
+        {% for i in items %}
+        <li><a href="{{url_for('getItemDetails', cat_name=i.category.name, item_title=i.title)}}">{{i.title}}</a></li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock pagecontent %}

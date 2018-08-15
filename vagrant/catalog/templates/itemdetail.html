@@ -1,15 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title></title>
-    <style src="../static/css/reset.css"></style>
-    <style src="../static/css/catalog.css"></style>
-</head>
-<body>
-    <h1 class="heading">{{ item.title }}</h1>
-    <p class="desc">{{ item.desc }}</p>
-</body>
-</html>
+{% extends "header.html" %}
+
+{% block title %}{{item.title}}{% endblock title %}
+
+{% block pagecontent %}
+
+<h1 class="heading">{{ item.title }}</h1>
+<p class="desc">{{ item.desc }}</p>
+
+{% endblock pagecontent %}

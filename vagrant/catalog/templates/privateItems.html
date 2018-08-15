@@ -1,0 +1,30 @@
+{% extends "header.html" %}
+
+{% block title %}{{items[0].category.name}}{% endblock title %}
+
+{% block pagecontent %}
+<div class="container">
+    <div class="row">
+            <a class="lead">Add new item</a>
+    </div>
+    <div class="row">
+        <div class="col-sm-6">
+            <h2 class="lead">Categories</h2>
+            <ul>
+                {% for c in categories %}
+                <li><a href="{{url_for('getItemsFromCategory', cat_name=c.name)}}">{{c.name}}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="col-sm-6">
+            <h2 class="lead">Items in {{items[0].category.name}}</h2>
+            <ul>
+                {% for i in items %}
+                <li><a href="{{url_for('getItemDetails', cat_name=i.category.name, item_title=i.title)}}">{{i.title}}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+
+{% endblock pagecontent %}
