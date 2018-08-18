@@ -1,4 +1,4 @@
-.login-button {
+.login-button, .logout-button {
     font-size: 18px!important;
     color: #fff!important;
     padding: 15px 30px!important;

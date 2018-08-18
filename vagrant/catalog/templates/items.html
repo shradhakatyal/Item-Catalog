@@ -1,8 +1,9 @@
-{% extends "header.html" %}
+{% extends "index.html" %}
 
 {% block title %}{{items[0].category.name}}{% endblock title %}
 
 {% block pagecontent %}
+{% include "header.html" %}
 <div class="left">
     <h2 class="sub-heading">Categories</h2>
     <ul>

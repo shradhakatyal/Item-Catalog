@@ -1,11 +1,12 @@
-{% extends "header.html" %}
+{% extends "index.html" %}
 
-{% block title %}{{items[0].category.name}}{% endblock title %}
+{% block title %}{% if items[0] %}{{items[0].category.name}}{%endif%}{% endblock title %}
 
 {% block pagecontent %}
+{% include "header.html" %}
 <div class="container">
     <div class="row">
-            <a class="lead">Add new item</a>
+            <a class="lead" href="{{url_for('addNewItem')}}">Add new item</a>
     </div>
     <div class="row">
         <div class="col-sm-6">
@@ -17,7 +18,10 @@
             </ul>
         </div>
         <div class="col-sm-6">
-            <h2 class="lead">Items in {{items[0].category.name}}</h2>
+            <h2 class="lead">{% if items[0] %}{{'Items in '}}{{items[0].category.name}}
+                    {% else %} {{'No items in this category'}}
+                {% endif %}
+            </h2>
             <ul>
                 {% for i in items %}
                 <li><a href="{{url_for('getItemDetails', cat_name=i.category.name, item_title=i.title)}}">{{i.title}}</a></li>

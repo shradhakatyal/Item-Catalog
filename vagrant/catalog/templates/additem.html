@@ -1,8 +1,9 @@
-{% extends "header.html" %}
+{% extends "index.html" %}
 
 {% block title %}Add New Item{% endblock title %}
 
 {% block pagecontent %}
+{% include "header.html" %}
 <div class="container">
     <h1>Add New Item</h1>
     <form action="{{url_for('addNewItem')}}" method="post">

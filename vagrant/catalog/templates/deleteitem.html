@@ -1,13 +1,14 @@
-{% extends "header.html" %}
+{% extends "index.html" %}
 
 {% block title %}Delete {{item_title}}{% endblock title %}
 
 {% block pagecontent %}
+{% include "header.html" %}
 <div class="container">
     <h1>Delete Item</h1>
     <p>Are you sure you want to delete this item?</p>
     <form action="{{url_for('deleteItem', cat_name=cat_name, item_title=item_title)}}" method="post">
-        <input type="submit" value="Delete">
+        <input type="submit" class="btn btn-danger" value="Delete">
     </form>
 </div>
 {% endblock pagecontent %}
