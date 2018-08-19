@@ -165,7 +165,7 @@ def gdisconnect():
 
         # response = make_response(json.dumps('Successfully disconnected.'), 200)
         # response.headers['Content-Type'] = 'application/json'
-        response = redirect(url_for('showCatalog'))
+        response = redirect(url_for('getAllCategories'))
         flash("You are now logged out.")
         return response
     else:
@@ -270,6 +270,35 @@ def addNewItem():
     else:
         return render_template('additem.html')
     
+
+@app.route('/catalog/categories/json')
+def getAllCategoriesJson():
+    categories = session.query(Category).all()
+    catobj = [category.serialize for category in categories]
+    if catobj:
+        return jsonify(Categories = catobj)
+    return jsonify({"error": "No categories exist yet"})
+
+@app.route('/catalog/categories/<string:cat_name>/json')
+def getCatJson(cat_name):
+    category = session.query(Category).filter_by(name=cat_name).one()
+    items = session.query(Item).filter_by(cat_id=category.id).all()
+    itemobj = [item.serialize for item in items]
+    if itemobj:
+        return jsonify(Item = itemobj)
+    return jsonify({"error":"No items exist in this category"})
+
+
+@app.route('/catalog/full/json')
+def getAllItemsJson():
+    categories = session.query(Category).all()
+    catobj = [category.serialize for category in categories]
+    for category in range(len(catobj)):
+        items = session.query(Item).filter_by(cat_id=catobj[category]["id"]).all()
+        itemobj = [item.serialize for item in items]
+        if itemobj:
+            catobj[category]["items"] = itemobj
+    return jsonify(catalog=catobj)
 
 if __name__ == '__main__':
     app.secret_key = 'super_secret_key'
