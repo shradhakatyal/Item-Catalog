@@ -29,7 +29,7 @@ class Category(Base):
 
     @property
     def serialize(self):
-        #Returns data in easily serializable form
+        # Returns data in easily serializable form
         return {
             'name': self.name,
             'id': self.id
@@ -49,7 +49,7 @@ class Item(Base):
 
     @property
     def serialize(self):
-        #Returns data in easily serializable form
+        # Returns data in easily serializable form
         return {
             'id': self.id,
             'title': self.title,
