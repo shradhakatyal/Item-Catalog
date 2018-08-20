@@ -219,8 +219,8 @@ def getItemsFromCategory(cat_name):
 def getItemDetails(cat_name, item_title):
     q = session.query(Category).filter_by(name=cat_name).one()
     cat_id = q.id
-    item =
-    session.query(Item).filter_by(cat_id=cat_id).filter_by(title=item_title).
+    item = session.query(Item)\
+    .filter_by(cat_id=cat_id).filter_by(title=item_title).\
     one()
     if q:
         if 'username' in login_session:
@@ -240,14 +240,14 @@ def editItem(cat_name, item_title):
         if request.method == 'POST':
             editedItem.name = request.form['title']
             editedItem.desc = request.form['desc']
-            cat_id = session.query(Category).
+            cat_id = session.query(Category).\
             filter_by(name=request.form['cat_name']).one().id
             editedItem.cat_id = cat_id
             session.add(editedItem)
             session.commit()
             return redirect(url_for('getItemsFromCategory', cat_name=cat_name))
         else:
-            item_desc = session.query(Item).
+            item_desc = session.query(Item).\
             filter_by(title=item_title).one().desc
             return
             render_template('edititem.html', cat_name=cat_name,
@@ -284,7 +284,7 @@ def addNewItem():
         if(session.query(Category).
             filter_by(name=request.form['cat_name']).
                 scalar() is not None):
-            cat_id = session.query(Category).
+            cat_id = session.query(Category).\
             filter_by(name=request.form['cat_name']).one().id
             newItem = Item(title=request.
                            form['title'], desc=request.form['desc'],
@@ -293,7 +293,7 @@ def addNewItem():
             newCat = Category(name=request.form['cat_name'],
                               user_id=login_session['user_id'])
             session.add(newCat)
-            cat_id = session.query(Category).
+            cat_id = session.query(Category).\
             filter_by(name=newCat.name).one().id
             newItem = Item(title=request.form['title'],
                            desc=request.form['desc'],
@@ -342,7 +342,7 @@ def getAllItemsJson():
     categories = session.query(Category).all()
     catobj = [category.serialize for category in categories]
     for category in range(len(catobj)):
-        items = session.query(Item).
+        items = session.query(Item).\
         filter_by(cat_id=catobj[category]["id"]).all()
         itemobj = [item.serialize for item in items]
         if itemobj:
