@@ -2,9 +2,10 @@
 
 ## About the project
 This project implements a basic item catalog using Flask, Sqlalchemy, Oauth 2.0, HTML and CSS.A user can log in using Google+ and can create, update, delete or read the database. If a user is not logged in, they can only read the database and not making any changes. The project serves up html files for all endpoints but there are a few json endpoints as follows:
-1. 'localhost:5000/catalog/categories/json' - Shows all the categories
-2. 'locahost:5000/catalog/categories/<string:cat_name>/json' - Shows all the items in a particular category
-3. 'localhost:5000/catalog/full/json' - Shows the complete data stored in the database
+1. localhost:5000/catalog/categories/json - Shows all the categories
+2. locahost:5000/catalog/categories/<string:cat_name>/json - Shows all the items in a particular category
+3. localhost:5000/catalog/full/json - Shows the complete data stored in the database
+4. locahost:5000/catalog/<string:cat_name>/<string:item_title>/json - Displays info about a particular item
 
 ## Prerequisites
 The project requires vagrant and VirtualBox to work. If you already have them installed, you can skip to the next section.
