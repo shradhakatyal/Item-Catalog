@@ -1,16 +1,17 @@
 from database_setup import Base, Category, Item, User
-from flask import Flask, render_template, request, redirect, jsonify, url_for, flash
+from flask import Flask, render_template, request, redirect, jsonify
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from oauth2client.client import flow_from_clientsecrets
 from oauth2client.client import FlowExchangeError
 import httplib2
 import json
-from flask import make_response
+from flask import make_response, url_for, flash
 import requests
 import random
 import string
 from flask import session as login_session
+from functools import wraps
 
 app = Flask(__name__)
 
@@ -25,6 +26,18 @@ Base.metadata.bind = engine
 
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
+
+
+# Creating login_required wrapper
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'username' in login_session:
+            return f(*args, **kwargs)
+        else:
+            flash('You cannot access this page. Redirecting to login page...')
+            return redirect('/login')
+    return decorated_function
 
 
 # Create anti-forgery state token
@@ -88,8 +101,8 @@ def gconnect():
     stored_access_token = login_session.get('access_token')
     stored_gplus_id = login_session.get('gplus_id')
     if stored_access_token is not None and gplus_id == stored_gplus_id:
-        response = make_response(json.dumps('Current user is already connected.'),
-                                 200)
+        response = make_response(
+                    json.dumps('Current user is already connected.'), 200)
         response.headers['Content-Type'] = 'application/json'
         return response
 
@@ -163,7 +176,6 @@ def gdisconnect():
         del login_session['username']
         del login_session['email']
 
-        # response = make_response(json.dumps('Successfully disconnected.'), 200)
         # response.headers['Content-Type'] = 'application/json'
         response = redirect(url_for('getAllCategories'))
         flash("You are now logged out.")
@@ -182,123 +194,161 @@ def gdisconnect():
 def getAllCategories():
     categories = session.query(Category)
     latest_items = session.query(Item).order_by(Item.id.desc()).limit(5)
-    for user in session.query(User):
-        print (user.id)
     if 'username' in login_session:
-        return render_template('privateCatalog.html', categories=categories, items=latest_items)
-    return render_template('catalog.html', categories=categories, items=latest_items)
+        return render_template('privateCatalog.html',
+                               categories=categories, items=latest_items)
+    return render_template('catalog.html',
+                           categories=categories, items=latest_items)
 
 
 # To display all items in a catgeory
 @app.route('/catalog/<string:cat_name>/items')
 def getItemsFromCategory(cat_name):
     categories = session.query(Category)
-    q = session.query(Category).filter_by(name=cat_name.title()).one()
+    q = session.query(Category).filter_by(name=cat_name).one()
     cat_id = q.id
     items = session.query(Item).filter_by(cat_id=cat_id).all()
     if 'username' in login_session:
-        return render_template('privateItems.html', categories=categories, items=items)
+        return render_template('privateItems.html',
+                               categories=categories, items=items)
     return render_template('items.html', categories=categories, items=items)
 
 
 # To display information about a single item
 @app.route('/catalog/<string:cat_name>/<string:item_title>')
 def getItemDetails(cat_name, item_title):
-    # item = session.query(Item).join(Category).filter(Item.title == item_title.title())
-    # .filter(Category.name == cat_name.title()).one()
     q = session.query(Category).filter_by(name=cat_name).one()
     cat_id = q.id
-    item = session.query(Item).filter_by(cat_id=cat_id).filter_by(title=item_title.title()).one()
+    item =
+    session.query(Item).filter_by(cat_id=cat_id).filter_by(title=item_title).
+    one()
     if q:
         if 'username' in login_session:
             return render_template('privateItemDetail.html', item=item)
-        return render_template('itemdetail.html', item=item)    
-    
+        return render_template('itemdetail.html', item=item)
 
-@app.route('/catalog/<string:cat_name>/<string:item_title>/edit', methods=['GET', 'POST'])
+
+# To edit a single item
+@app.route('/catalog/<string:cat_name>/<string:item_title>/edit',
+           methods=['GET', 'POST'])
+@login_required
 def editItem(cat_name, item_title):
     category = session.query(Category).filter_by(name=cat_name).one()
     creator = getUserInfo(category.user_id)
-    if 'username' in login_session and creator.id == login_session['user_id']:
-        print ('user')
+    if creator.id == login_session['user_id']:
         editedItem = session.query(Item).filter_by(title=item_title).one()
         if request.method == 'POST':
             editedItem.name = request.form['title']
             editedItem.desc = request.form['desc']
-            cat_id = session.query(Category).filter_by(name=request.form['cat_name']).one().id
+            cat_id = session.query(Category).
+            filter_by(name=request.form['cat_name']).one().id
             editedItem.cat_id = cat_id
             session.add(editedItem)
             session.commit()
             return redirect(url_for('getItemsFromCategory', cat_name=cat_name))
         else:
-            item_desc = session.query(Item).filter_by(title=item_title).one().desc
-            return render_template('edititem.html',cat_name=cat_name, item_title=item_title, item_desc=item_desc)
+            item_desc = session.query(Item).
+            filter_by(title=item_title).one().desc
+            return
+            render_template('edititem.html', cat_name=cat_name,
+                            item_title=item_title, item_desc=item_desc)
     else:
         return render_template('notAuth.html')
 
 
-@app.route('/catalog/<string:cat_name>/<string:item_title>/delete', methods=['GET', 'POST'])
+# To delete an item
+@app.route('/catalog/<string:cat_name>/<string:item_title>/delete',
+           methods=['GET', 'POST'])
+@login_required
 def deleteItem(cat_name, item_title):
     category = session.query(Category).filter_by(name=cat_name).one()
     creator = getUserInfo(category.user_id)
-    if 'username' in login_session and creator.id == login_session['user_id']:
+    if creator.id == login_session['user_id']:
         deletedItem = session.query(Item).filter_by(title=item_title).one()
         if request.method == 'POST':
             session.delete(deletedItem)
             session.commit()
             return redirect(url_for('getItemsFromCategory', cat_name=cat_name))
         else:
-            return render_template('deleteitem.html',cat_name=cat_name, item_title=item_title)
+            return render_template('deleteitem.html',
+                                   cat_name=cat_name, item_title=item_title)
     else:
         return render_template('notAuth.html')
 
+
+# To add a new item to the catalog
 @app.route('/catalog/add', methods=['GET', 'POST'])
+@login_required
 def addNewItem():
     if request.method == 'POST':
-        if(session.query(Category).filter_by(name=request.form['cat_name']).scalar() is not None):
-            cat_id = session.query(Category).filter_by(name=request.form['cat_name']).one().id
-            newItem = Item(title=request.form['title'], desc=request.form['desc'], cat_id=cat_id, user_id=login_session['user_id'])
+        if(session.query(Category).
+            filter_by(name=request.form['cat_name']).
+                scalar() is not None):
+            cat_id = session.query(Category).
+            filter_by(name=request.form['cat_name']).one().id
+            newItem = Item(title=request.
+                           form['title'], desc=request.form['desc'],
+                           cat_id=cat_id, user_id=login_session['user_id'])
         else:
-            newCat = Category(name=request.form['cat_name'])
+            newCat = Category(name=request.form['cat_name'],
+                              user_id=login_session['user_id'])
             session.add(newCat)
-            cat_id = session.query(Category).filter_by(name=newCat.name).one().id
-            newItem = Item(title=request.form['title'], desc=request.form['desc'], cat_id=cat_id, user_id=login_session['user_id'])
-        
+            cat_id = session.query(Category).
+            filter_by(name=newCat.name).one().id
+            newItem = Item(title=request.form['title'],
+                           desc=request.form['desc'],
+                           cat_id=cat_id, user_id=login_session['user_id'])
         session.add(newItem)
         session.commit()
         return redirect(url_for('getAllCategories'))
     else:
         return render_template('additem.html')
-    
 
+
+# JSON end points
+# End point to get all categories in json format
 @app.route('/catalog/categories/json')
 def getAllCategoriesJson():
     categories = session.query(Category).all()
     catobj = [category.serialize for category in categories]
     if catobj:
-        return jsonify(Categories = catobj)
+        return jsonify(Categories=catobj)
     return jsonify({"error": "No categories exist yet"})
 
+
+# End point to get info about a single category in json format
 @app.route('/catalog/categories/<string:cat_name>/json')
 def getCatJson(cat_name):
     category = session.query(Category).filter_by(name=cat_name).one()
     items = session.query(Item).filter_by(cat_id=category.id).all()
     itemobj = [item.serialize for item in items]
     if itemobj:
-        return jsonify(Item = itemobj)
-    return jsonify({"error":"No items exist in this category"})
+        return jsonify(Item=itemobj)
+    return jsonify({"error": "No items exist in this category"})
 
 
+# End point to get info about a single item in a json format
+@app.route('/catalog/<string:cat_name>/<string:item_title>/json')
+def getItemDetailsJson(cat_name, item_title):
+    category = session.query(Category).filter_by(name=cat_name).one()
+    item = session.query(Item).filter_by(cat_id=category.id).one()
+    itemobj = [item.serialize]
+    return jsonify(Item=itemobj)
+
+
+# End point to get all the info stored in the db in json format
 @app.route('/catalog/full/json')
 def getAllItemsJson():
     categories = session.query(Category).all()
     catobj = [category.serialize for category in categories]
     for category in range(len(catobj)):
-        items = session.query(Item).filter_by(cat_id=catobj[category]["id"]).all()
+        items = session.query(Item).
+        filter_by(cat_id=catobj[category]["id"]).all()
         itemobj = [item.serialize for item in items]
         if itemobj:
             catobj[category]["items"] = itemobj
     return jsonify(catalog=catobj)
+
 
 if __name__ == '__main__':
     app.secret_key = 'super_secret_key'
