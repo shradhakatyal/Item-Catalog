@@ -1,0 +1,35 @@
+{% extends "index.html" %}
+
+{% block title %}{% if items[0] %}{{items[0].category.name}}{%endif%}{% endblock title %}
+
+{% block pagecontent %}
+{% include "header.html" %}
+{% include "flash.html" %}
+<div class="container">
+    <div class="row">
+            <a class="lead" href="{{url_for('addNewItem')}}">Add new item</a>
+    </div>
+    <div class="row">
+        <div class="col-sm-6">
+            <h2 class="lead">Categories</h2>
+            <ul>
+                {% for c in categories %}
+                <li><a href="{{url_for('getItemsFromCategory', cat_name=c.name)}}">{{c.name}}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="col-sm-6">
+            <h2 class="lead">{% if items[0] %}{{'Items in '}}{{items[0].category.name}}
+                    {% else %} {{'No items in this category'}}
+                {% endif %}
+            </h2>
+            <ul>
+                {% for i in items %}
+                <li><a href="{{url_for('getItemDetails', cat_name=i.category.name, item_title=i.title)}}">{{i.title}}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+
+{% endblock pagecontent %}

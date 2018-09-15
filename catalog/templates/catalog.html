@@ -1,0 +1,29 @@
+{% extends "index.html" %}
+{% block title %}Catalog{% endblock title %}
+
+{% block pagecontent %}
+{% include "header.html" %}
+{% include "flash.html" %}
+<div class="container">
+    <div class="row">
+            <div class="col-sm-6">
+                    <h2 class="lead">Categories</h2>
+                    <ul>
+                        {% for c in categories %}
+                        <li><a href="{{url_for('getItemsFromCategory', cat_name=c.name)}}">{{c.name}}</a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="col-sm-6">
+                    <h2 class="lead">Latest Items</h2>
+                    <ul>
+                        {% for i in items %}
+                        <li><a href="{{url_for('getItemDetails', cat_name=i.category.name, item_title=i.title)}}">{{i.title}}<span>({{i.category.name}})</span></a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+    </div>
+   
+</div>
+{% endblock pagecontent %}
+

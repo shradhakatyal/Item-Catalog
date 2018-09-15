@@ -1,0 +1,20 @@
+{% extends "index.html" %}
+
+{% block title %}Edit Item{% endblock title %}
+
+{% block pagecontent %}
+{% include "header.html" %}
+{% include "flash.html" %}
+<div class="container">
+    <h1>Edit Item</h1>
+    <form action="{{url_for('editItem', cat_name = cat_name, item_title=item_title)}}" method="post">
+        <p>Item Title:</p>
+        <input type="text" name="title" size="30" value="{{item_title}}">
+        <p>Item Description:</p>
+        <input type="text" name="desc" size="500" value="{{item_desc}}">
+        <p>Category name:</p>
+        <input type="text" name="cat_name" size="30" value="{{cat_name}}">
+        <input type="submit" value="Submit">
+    </form>
+</div>
+{% endblock pagecontent %}

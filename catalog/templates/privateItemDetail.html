@@ -1,0 +1,15 @@
+{% extends "index.html" %}
+
+{% block title %}{{item.title}}{% endblock title %}
+
+{% block pagecontent %}
+{% include "header.html" %}
+{% include "flash.html" %}
+<h1>{{ item.title }}</h1>
+<p class="lead">{{ item.desc }}</p>
+<div class="edit-controls">
+    <a href="{{url_for('editItem', cat_name = item.category.name, item_title=item.title)}}">Edit</a>
+    <a href="{{url_for('deleteItem', cat_name=item.category.name, item_title=item.title)}}">Delete</a>
+</div>
+
+{% endblock pagecontent %}

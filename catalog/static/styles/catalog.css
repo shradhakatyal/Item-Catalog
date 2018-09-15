@@ -1,0 +1,20 @@
+.login-button, .logout-button {
+    font-size: 18px!important;
+    color: #fff!important;
+    padding: 15px 30px!important;
+    background-color: #4da6ff!important;
+    border: none!important;
+    border-radius: 3px!important; 
+}
+
+a > span {
+    color: #bfbfbf;
+}
+
+a > span:hover {
+    text-decoration: none;
+}
+
+.row {
+    margin-top: 30px;
+}
