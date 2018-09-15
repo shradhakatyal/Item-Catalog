@@ -10,19 +10,28 @@ DBSession = sessionmaker()
 DBSession.configure(bind=engine)
 session = DBSession()
 
+
+#Adding a test user
+
+user = User(id=1, email='skatyal@gmail.com')
+
+session.add(user)
+session.commit()
+
+
 # Adding categories
 
-category_1 = Category(name="Soccer", user_id=1)
+category_1 = Category(name="Soccer", user_id=1, id=1)
 
 session.add(category_1)
 session.commit()
 
-category_2 = Category(name="Tennis", user_id=1)
+category_2 = Category(name="Tennis", user_id=1, id=2)
 
 session.add(category_2)
 session.commit()
 
-category_3 = Category(name="Snowboarding", user_id=1)
+category_3 = Category(name="Snowboarding", user_id=1, id=3)
 
 session.add(category_3)
 session.commit()
